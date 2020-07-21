@@ -1,3 +1,6 @@
 {
-  "mongoURI": "mongodb+srv://azad123:azad123@devconnector.exxhw.mongodb.net/test?retryWrites=true&w=majority"
+  "mongoURI": "mongodb+srv://azad123:azad123@devconnector.exxhw.mongodb.net/test?retryWrites=true&w=majority",
+  "jwtSecret": "mySecretToken",
+  "githubClientId": "ff7ef273ed32b5b0f254",
+  "githubSecret": "551c6690c41b76705a7835c7bfde1165a07e8c4b"
 }
