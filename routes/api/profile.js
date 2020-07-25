@@ -7,6 +7,7 @@ const { check, validationResult, body } = require('express-validator');
 
 const Profile = require('../../models/Profile');
 const User = require('../../models/User');
+const Post = require('../../models/Post');
 
 // @route     Get api/profile/me
 // @desc      Get current users profile
@@ -42,8 +43,7 @@ router.post(
   ],
   async (req, res) => {
     const errors = validationResult(req);
-    if (!errors.isEmpty) {
-      console.log('i am here');
+    if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
 
@@ -72,7 +72,9 @@ router.post(
     if (status) profileFields.status = status;
     if (githubusername) profileFields.githubusername = githubusername;
     if (skills) {
-      profileFields.skills = skills.split(',').map((skill) => skill.trim());
+      try {
+        profileFields.skills = skills.split(',').map((skill) => skill.trim());
+      } catch (err) {}
     }
 
     // Build social object
@@ -84,24 +86,12 @@ router.post(
     if (instagram) profileFields.social.instagram = instagram;
 
     try {
-      let profile = await Profile.findOne({ user: req.user.id });
-
-      if (profile) {
-        // Update
-        profile = await Profile.findOneAndUpdate(
-          { user: req.user.id },
-          { $set: profileFields },
-          { new: true }
-        );
-
-        return res.json(profile);
-      }
-
-      // Create
-      profile = new Profile(profileFields);
-
-      await profile.save();
-
+      // Using upsert option (creates new doc if no match is found):
+      let profile = await Profile.findOneAndUpdate(
+        { user: req.user.id },
+        { $set: profileFields },
+        { new: true, upsert: true }
+      );
       res.json(profile);
     } catch (err) {
       console.error(err.message);
@@ -148,7 +138,8 @@ router.get('/user/:user_id', async (req, res) => {
 // @access    Private
 router.delete('/', auth, async (req, res) => {
   try {
-    // @todo - remove users posts
+    // remove users posts
+    await Post.deleteMany({ user: req.user.id });
 
     //Remove profile
     await Profile.findOneAndRemove({ user: req.user.id });
