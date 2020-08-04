@@ -2,8 +2,9 @@ import React from 'react';
 import { Link, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import { login } from '../../actions/auth';
 
-const Landing = ({ isAuthenticated }) => {
+const Landing = ({ isAuthenticated, login }) => {
   if (isAuthenticated) {
     return <Redirect to='/dashboard' />;
   }
@@ -24,6 +25,13 @@ const Landing = ({ isAuthenticated }) => {
             <Link to='/login' className='btn btn-light'>
               Login
             </Link>
+            <Link
+              to='/profiles'
+              className='btn btn-light'
+              onClick={() => login('demo@gmail.com', '123456')}
+            >
+              Demo Login
+            </Link>
           </div>
         </div>
       </div>
@@ -32,6 +40,7 @@ const Landing = ({ isAuthenticated }) => {
 };
 
 Landing.propTypes = {
+  login: PropTypes.func.isRequired,
   isAuthenticated: PropTypes.bool,
 };
 
@@ -39,4 +48,4 @@ const mapStateToProps = (state) => ({
   isAuthenticated: state.auth.isAuthenticated,
 });
 
-export default connect(mapStateToProps)(Landing);
+export default connect(mapStateToProps, { login })(Landing);
