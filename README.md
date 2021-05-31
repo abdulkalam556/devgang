@@ -1,1 +1,1 @@
-# devgang is MERN stack developers social app. demo lone [here](https://devgang.herokuapp.com/)
+# devgang is MERN stack application where developers centered social media application. demo link is [here](https://devgang.herokuapp.com/)
